@@ -6,17 +6,32 @@ def introduction():
     """
     Prints the introduction to 2020 Game.
     """
-    print('Please enter you name to start: ')
-    name = input().title()
-    print(f'December 31th 2019 23:59:30: {name} was outside English Bay counting down the seconds until the new year.')
-    print(f'2019 was a hard year for you, so you were so excited for the new year.\nIt is 2020 after all, and you are '
-          f'here for the 20/20 vision.\nLittle did you know what 2020 has in store for you...\n')
+    print('\n\nDecember 31th 2019 23:59: You was outside English Bay counting down the seconds until the new year.'
+          '\n2019 was a hard year for you, so you were so excited for the new year.\nIt is 2020 after all, and you are '
+          'here for the 20/20 vision.\nLittle did you know what 2020 has in store for you...\n')
     time.sleep(2)
 
-    print('January 1st 2020 24:00:00: Something has gone horribly wrong the sky turned very black \n'
-          'and you have been teleported to an dark abyss. You have to escape this dungeon full of misfortunes in one'
-          ' piece by finding the exit marked on the map you have been given.\n')
+    print('January 1st 2020 24:00: Something has gone horribly wrong the sky turned black'
+          ' and you suddenly got \nteleported to an dark abyss.You have to escape abyss full of misfortunes in one'
+          ' piece \nby defeating COVID-19 and everything that it throws at you without going insane.\n')
     time.sleep(2)
+
+    print("""
+    Press q to quit at anytime, 
+          """)
+
+    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+
+
+def player_name():
+    """
+    Prompts user to enter their name, helper function for choose character.
+
+    :return: string
+    """
+    print('Please enter your name to start: ')
+    name = input().title()
+    return name
 
 
 def generate_random_room():
@@ -73,11 +88,11 @@ def choose_character():
                              'furloughed worker': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 5},
                              'angry teenager': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 10}}
 
-    print('0. Vulnerable senior \n' 
+    print(f'\nWelcome {player_name()}, please choose your fate (0, 1, 2, 3): \n'
+          '0. Vulnerable senior \n'
           '1. Furloughed worker \n'
           '2. Unemployed new graduate \n'
-          '3. Angry teenager \n'
-          'Choose your fate: (0, 1, 2, 3): ')
+          '3. Angry teenager \n')
 
     character_class_input = input().lower()
 
@@ -114,6 +129,8 @@ def describe_character(character):  # TODO must implement
     character_chosen = character.get('Fate')
 
     print(f'You have selected {character_chosen}. {description} ')
+
+
 # def make_character():
 #     """
 #     Creates a character dictionary that contains their position on the game board and their current HP.
@@ -215,7 +232,7 @@ def get_user_choice():
     :postcondition: user will enter the direction they wish to go
     @return: string stating direction 'North', 'East', 'South', 'West'
     """
-    print('1. North \n' 
+    print('1. North \n'
           '2. East \n'
           '3. South \n'
           '4. West \n'
@@ -388,7 +405,7 @@ def check_if_goal_attained(board, character):
     False
     """
     coordinates_tuple = (character['X-coordinate'], character['Y-coordinate'])
-    if coordinates_tuple == (25, 18) in board.keys():
+    if coordinates_tuple == (3, 3) in board.keys():
         return True
     else:
         return False
@@ -420,8 +437,8 @@ def game():
     Drive the entire game.
     """
     introduction()
-    rows = 25
-    columns = 25
+    rows = 26
+    columns = 26
     board = make_board(rows, columns)
     character = choose_character()
     achieved_goal = False
@@ -442,9 +459,29 @@ def game():
             print("Oh no, you have reached the a dead end!")
 
     if achieved_goal:
-        print("Congratulations you have finished the game!")
+        print("""
+                                                   .''.       
+               .''.      .        *''*    :_\/_:     . 
+              :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.
+          .''.: /\ :   ./)\   ':'* /\ * :  '..'.  -=:o:=-
+         :_\/_:'.:::.    ' *''*    * '.|'/.' _\(/_'.':'.'
+         : /\ : :::::     *_\/_*     -= o =-  /)\    '  *
+          '..'  ':::'     * /\ *     .'/.|'.   '
+              *            *..*         :
+               *
+                *
+        Congratulations you were able to survive 2020!""")
     if not is_alive(character):
-        print("You died a brave soul.")
+        print("""
+
+                  _____
+                 |     |
+                | () () |
+                 \  ^  /
+                  |||||
+                  |||||
+            You have died.
+               """)
 
 
 def main():

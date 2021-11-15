@@ -1,4 +1,5 @@
 import random
+import sys
 import time
 import itertools as it
 
@@ -17,9 +18,17 @@ def introduction():
           ' piece \nby defeating COVID-19 and everything that it throws at you without going insane.\n')
     time.sleep(2)
 
-    print('Choose your character wisely, they will all have different attributes and start at different positions.')
+    print('Choose your fate wisely, each fate has different attributes and start at different positions.'
+          '\nThe more events you surviving through, the more you will generate antibodies (EXP) '
+          '\nby increasing your immunity (Level) and increase your HP which is your sanity meter. '
+          '\nYou need to defeat COVID-19 (final boss) by generating enough antibodies to withstand its attack and '
+          'survive 2020.\nYour location is marked by the P, and the final boss is the virus marked, there is a 20% '
+          'chance of an \nevent occurring which may inflict damage onto you before you attack it, or when you flee.'
+          '\nYou may choose to quit at any time after you have selected your fate.')
 
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+
+    time.sleep(2)
 
 
 def player_name():
@@ -67,6 +76,7 @@ def make_board(rows, columns):
 
     dict_board = {(row, column): generate_random_room() for row in range(rows) for column in range(columns)}
     return dict_board
+    # return a tuple (string, and boss object)
 
 
 def choose_character():
@@ -80,20 +90,21 @@ def choose_character():
     """
     name = player_name()
     all_character_options = {'vulnerable senior': {'X-coordinate': 20, 'Y-coordinate': 17, 'Current HP': 2, 'Level': 1,
-                                                   'EXP': 0, 'Name': name, 'Attack': 10,
+                                                   'Current EXP': 0, 'Name': name, 'Attack': 10,
                                                    'Attack description': 'Showed your hospital bill.',
                                                    'Description': 'You don\'t have a lot of life you but you '
                                                                   'keep hanging on!'},
                              'unemployed new grad': {'X-coordinate': 5, 'Y-coordinate': 2, 'Current HP': 8,
-                                                     'Level': 1, 'EXP': 0, 'Name': name, 'Attack': 5,
+                                                     'Level': 1, 'Current EXP': 0, 'Name': name, 'Attack': 5,
                                                      'Attack description': 'You Threw your overpriced textbook',
                                                      'Description': 'You are hopeful but a bit jaded.'},
-                             'furloughed worker': {'X-coordinate': 8, 'Y-coordinate': 7, 'Current HP': 15, 'Level': 1,
+                             'furloughed worker': {'X-coordinate': 8, 'Y-coordinate': 7, 'Current HP': 10, 'Level': 1,
                                                    'Description': 'You are just done with life.', 'Name': name, 'Attack'
-                                                   : 2, 'Attack description': 'You showed your receding hairline'},
-                             'angry teenager': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 10, 'Level': 1,
+                                                   : 2, 'Attack description': 'You showed your receding hairline',
+                                                   'Current EXP': 0},
+                             'angry teenager': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 12, 'Level': 1,
                                                 'Description': 'You don\'t know why but you are angry at everything.',
-                                                'Name': name, 'Attack': 10,
+                                                'Name': name, 'Attack': 1, 'Current EXP': 0,
                                                 'Attack description': 'You told the foe that you just don\'t want to '
                                                                       'talk about it.'}}
 
@@ -163,7 +174,7 @@ def describe_current_location(board, character):
     coordinates_tuple = (character['X-coordinate'], character['Y-coordinate'])
     description = board[coordinates_tuple]
 
-    print(f'\n{description} Your current coordinates are {coordinates_tuple}')
+    print(f'{description} Your current coordinates are {coordinates_tuple}')
 
 
 def board_printer(width, height, character):
@@ -178,9 +189,14 @@ def board_printer(width, height, character):
     :postcondition: each key is printed and for the key that is assigned True as a value, it prints the character
     :return: printed board displaying character's location & current health
 
-    >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (1, 2): 'room 3', (1, 3): 'room 4', (1, 1): 'random 5'}
     >>> player = {'X-coordinate': 1, 'Y-coordinate': 0, 'Current HP': 5}
-    >>> board_printer(board_map, 2, 4, player)
+    >>> board_printer(2, 4, player)
+    #######
+    # . . #
+    # P . #
+    # . . #
+    # . . #
+    #######
     """
     character_location = (character['X-coordinate'], character['Y-coordinate'])
 
@@ -242,9 +258,16 @@ def user_direction_choice():
         for key, values in direction_choice_dict.items():
             if user_direction_input in key:
                 return values
+            if user_direction_input == 'quit':
+                quit()
 
         print("That is an invalid answer. Please try again: ")
         user_direction_input = input()
+
+
+def quit():
+    print('You have lost the will to go on...')
+    sys.exit()
 
 
 def validate_move(board, character, direction):
@@ -332,9 +355,8 @@ def foe_generator():  # TODO
     >>> foe_generator()
     """
     foe_variety = ['crippling student debt', 'Murder Hornets', 'Australia bushfire', 'Dow Jones stock market crash',
-                   'your parents that you started living with since the pandemic', 'your sanity', 'shortage in toilet '
-                                                                                                  'paper'
-                                                                                                  'avocado toast you can no longer afford',
+                   'your parents that you started living with since the pandemic', 'your sanity',
+                   'toilet paper shortage', 'avocado toast you can no longer afford',
                    'anti-masker', 'Zoom university', 'online learning']
 
     foes = {'name': random.choice(foe_variety), 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
@@ -356,9 +378,10 @@ def populate_foes_on_board(foe):  # TODO
     You have encountered Murder Hornets!
     """
     type_of_foe = foe['name']
-    if check_for_foes():
-        return type_of_foe
-    print(f'You have encountered {type_of_foe}!')
+    foe_hit_points = foe['Current HP']
+
+    print(f'You have encountered a foe, {type_of_foe}! It has {foe_hit_points} HP')
+    return type_of_foe
 
 
 def check_for_foes():
@@ -381,8 +404,7 @@ def user_combat_choice():  # TODO
     :postcondition: the program will register their option and respond accordingly
     @return: string stating option
     """
-    print('You have encountered an enemy!\n'
-          '0. Attack \n'
+    print('0. Attack \n'
           '1. Flee \n'
           '2. Quit \n'
           'Please enter the number that correspond to the action you wish to take (0, 1, 2, 3): ')
@@ -402,61 +424,61 @@ def user_combat_choice():  # TODO
         user_combat_input = input()
 
 
-def guessing_game(character):
-    """
-    Prompt user to play a guessing game.
-
-    Users have to input a number from 1 to 5, if they do not answer the correct number they will receive 1 HP of damage.
-
-    :@param character: dictionary of character's coordinates and HP
-    :precondition: character HP > 1 before starting the guessing game
-    :precondition: the user must enter a number in range(1, 6), any other number will be wrong and damage will be
-    inflicted on the character
-    :postcondition: Users have to input a number from 1 to 5, if they do not answer the correct number they will receive
-    1 HP of damage
-    @return: None
-    """
-    user_guess = int(input('You have encountered an enemy! Pick a number from 1 to 5: '))
-    secret_number = random.randint(1, 5)
-    if user_guess == secret_number:
-        print(f'You\'ve guessed right!, the number was {secret_number}.')
-    else:
-        character['Current HP'] -= 1
-        hp = character['Current HP']
-        print(f'Sorry, that was not the number. I am going to have to hurt you. Your HP is now {hp}.')
-
-
-def battle(character, foe): # TODO
-    pass
+# def guessing_game(character):
+#     """
+#     Prompt user to play a guessing game.
+#
+#     Users have to input a number from 1 to 5, if they do not answer the correct number they will receive 1 HP of damage.
+#
+#     :@param character: dictionary of character's coordinates and HP
+#     :precondition: character HP > 1 before starting the guessing game
+#     :precondition: the user must enter a number in range(1, 6), any other number will be wrong and damage will be
+#     inflicted on the character
+#     :postcondition: Users have to input a number from 1 to 5, if they do not answer the correct number they will receive
+#     1 HP of damage
+#     @return: None
+#     """
+#     user_guess = int(input('You have encountered an enemy! Pick a number from 1 to 5: '))
+#     secret_number = random.randint(1, 5)
+#     if user_guess == secret_number:
+#         print(f'You\'ve guessed right!, the number was {secret_number}.')
+#     else:
+#         character['Current HP'] -= 1
+#         hp = character['Current HP']
+#         print(f'Sorry, that was not the number. I am going to have to hurt you. Your HP is now {hp}.')
 
 
-def attack(character, foe):  # TODO
-    """
+def confirm_combat_options(combat, character, foe):  # TODO
 
-    :param foe:
-    :param character:
-    :param enemy:
-    :return:
-    """
-
-    character['Current HP'] -= 1
-    foe['Current HP'] -= 1
+    while is_alive(character) and is_alive(foe):
+        pass
 
 
-def quit_game():  # TODO
-    """
-
-    :return:
-    """
-    pass
+# def attack_foe(character, foe):  # TODO
+#     """
+#
+#     :param foe:
+#     :param character:
+#     :return:
+#     >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You showed your receding hairline'}
+#     >>> enemy = {'name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
+#     >>> attack_foe(player, enemy)
+#     You attack by You showed your receding hairline, it inflicted 3 damage to the foe
+#     """
+#     special_attack = character['Attack description']
+#     damage = character['Attack']
+#     foe_hit_points = foe['Current HP']
+#     print(f'You attack by {special_attack}, it inflicted {damage} damage to the foe')
+#         character['Current HP'] -= 1
+#         foe['Current HP'] -= 1
 
 
 def flee(character):  # TODO need to implement into main
     """
-    Flees from the monster. There is a 20% chance of the monster dealing 1-3 damage.
+    Flees from the foe. There is a 20% chance of the monster dealing 1-3 damage.
+
+    :param character:
     :return: The amount of damage dealt.
-
-
     >>> player = {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 5}
     >>> flee(player)
     """
@@ -560,14 +582,17 @@ def game():
         health_printer(character)
         describe_current_location(board, character)  # Tell the user where they are
         direction = user_direction_choice()
-
         valid_move = validate_move(board, character, direction)
         if valid_move:
             move_character(board, character, direction)
             there_is_a_challenger = check_for_foes()
             if there_is_a_challenger:
+                populate_foes_on_board(foe)
                 combat = user_combat_choice()
-                guessing_game(character)
+                # run = flee(character)
+                # attack = attack_foe(character, foe)
+                confirm_combat_options(combat)
+                # guessing_game(character)
             achieved_goal = check_if_goal_attained(board, character, final_boss)
         else:
             print("Oh no, you have reached the a dead end!")

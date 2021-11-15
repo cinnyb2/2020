@@ -407,7 +407,7 @@ def user_combat_choice():  # TODO
     """
     print('0. Attack \n'
           '1. Flee \n'
-          'Please enter the number that correspond to the action you wish to take (0, 1, 2, 3): ')
+          'Please enter the number that correspond to the action you wish to take (0, 1): ')
 
     user_combat_input = input()
 
@@ -451,10 +451,13 @@ def user_combat_choice():  # TODO
 #         print(f'Sorry, that was not the number. I am going to have to hurt you. Your HP is now {hp}.')
 
 
-def confirm_combat_options(combat, character, foe):  # TODO
-
-    while is_alive(character) and is_alive(foe):
-        pass
+# def battle(character, foe, decision):  # TODO
+#     turn_picker = [character, foe]  # index 0 attacks first and index 1 attacks after
+#     random.shuffle(turn_picker)
+#     if character == 0:
+#
+#     while is_alive(character) and is_alive(foe):
+#         pass
 
 
 # def attack_foe(character, foe):  # TODO
@@ -537,11 +540,11 @@ def describe_boss(game_boss):
     """
     boss_description = game_boss['Description']
     boss_hit_points = game_boss['Current HP']
-    print(f'You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have build up enough immunity'
-          f'to stand a fighting chance against it. \n{boss_description}. It has {boss_hit_points} HP')
+    print(f'You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have build up enough immunity '
+          f'to stand a fighting chance against it. \n{boss_description} It has {boss_hit_points} HP')
 
 
-def check_if_goal_attained(board, character, game_boss):  # TODO
+def check_if_goal_attained(board, character, game_boss):
     """
     Check to see if the character has reached the destination (20, 18) and defeated the monster
 
@@ -549,7 +552,7 @@ def check_if_goal_attained(board, character, game_boss):  # TODO
 
     @param board: dictionary
     @param character: dictionary
-    :param game_boss: dictionary of boss stats
+    @param game_boss: dictionary of boss stats
     :precondition: character must be within the board boundary
     :precondition: board must be unchanged
     :postcondition: check to see if the character has reached the destination (20, 18)
@@ -592,6 +595,29 @@ def is_alive(character):
     False
     """
     return False if character['Current HP'] == 0 else True
+
+
+def level_up(character):
+    """
+
+    """
+    if character['Current EXP'] == 100:
+        character['Level'] += 1
+        character['Attack'] += 5
+    if character['Current EXP'] == 200:
+        character['Level'] += 1
+        character['Attack'] += 8
+
+    return character['Level']
+
+
+def level_describer(character):
+    fate = choose_character()
+    level = character['Level']
+    if level == 2:
+        print(f'Congratulations, you have leveled up to {level} you are now a partially vaccinated {fate}!')
+    if level == 3:
+        print(f'Congratulations, you have leveled up to {level} you are now invisible {fate}!')
 
 
 def game():

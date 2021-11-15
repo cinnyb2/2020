@@ -19,12 +19,12 @@ def introduction():
     time.sleep(2)
 
     print('Choose your fate wisely, each fate has different attributes and start at different positions.'
-          '\nThe more events you surviving through, the more you will generate antibodies (EXP) '
+          '\nThe more events (foes) you surviving through, the more you will generate antibodies (EXP) '
           '\nby increasing your immunity (Level) and increase your HP which is your sanity meter. '
           '\nYou need to defeat COVID-19 (final boss) by generating enough antibodies to withstand its attack and '
           'survive 2020.\nYour location is marked by the P, and the final boss is the virus marked, there is a 20% '
           'chance of an \nevent occurring which may inflict damage onto you before you attack it, or when you flee.'
-          '\nYou may choose to quit at any time after you have selected your fate.')
+          '\nYou may choose to quit at any time by typing \'quit\' after you have selected your fate.')
 
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
@@ -50,11 +50,11 @@ def generate_random_room():
     :postcondition: correctly returns a random room description out of a list of room descriptions
     @return: a string describing the room
     """
-    random_room = ['You have discovered a magical room, the aura of magic fills you with wonder.',
-                   'You have entered a room full of monster statues, you are filled with fear.',
-                   'You have entered a room full of puppies, you are filled with happiness.',
+    random_room = ['You see nothing, the emptiness fill you with hollowness.',
+                   'You have entered a hallway full of monster statues, you are filled with fear.',
+                   'You see a small light, which sparks hope in you.',
                    'You have entered an abandoned room, the nauseating stench is giving you a headache.',
-                   'You have entered an empty room.']
+                   'You are surrounded by tall grass.']
 
     return random_room[random.randint(0, 4)]
 
@@ -68,15 +68,16 @@ def make_board(rows, columns):
 
     @param rows: positive non-zero integer
     @param columns: positive non-zero integer
+    @param game_boss: a dictionary of the final boss's information
     :precondition: both rows and columns must be positive non-zero integer
     :precondition: param must be >= 2
     :postcondition: correctly returns a dictionary
     @return: a dictionary
     """
+    # boss_coordinates_tuple = (game_boss['X-coordinate'], game_boss['Y-coordinate'])
 
     dict_board = {(row, column): generate_random_room() for row in range(rows) for column in range(columns)}
     return dict_board
-    # return a tuple (string, and boss object)
 
 
 def choose_character():
@@ -242,30 +243,30 @@ def user_direction_choice():
     :postcondition: user will enter the direction they wish to go
     @return: string stating direction 'North', 'East', 'South', 'West'
     """
-    print('1. North \n'
-          '2. East \n'
-          '3. South \n'
-          '4. West \n'
-          'Please enter the number that corresponds to the direction you want to go (1, 2, 3, 4): ')
+    print('0. North \n'
+          '1. East \n'
+          '2. South \n'
+          '3. West \n'
+          'Please enter the number that corresponds to the direction you want to go (0, 1, 2, 3): ')
     user_direction_input = input()
 
     user_direction_input = user_direction_input.lower()
 
-    direction_choice_dict = {('1', 'n', 'north'): 'North', ('2', 'e', 'east'): 'East',
-                             ('3', 's', 'south'): 'South', ('4', 'w', 'west'): 'West'}
+    direction_choice_dict = {('0', 'n', 'north'): 'North', ('1', 'e', 'east'): 'East',
+                             ('2', 's', 'south'): 'South', ('3', 'w', 'west'): 'West'}
 
     while True:
         for key, values in direction_choice_dict.items():
             if user_direction_input in key:
                 return values
             if user_direction_input == 'quit':
-                quit()
+                quit_game()
 
         print("That is an invalid answer. Please try again: ")
         user_direction_input = input()
 
 
-def quit():
+def quit_game():
     print('You have lost the will to go on...')
     sys.exit()
 
@@ -380,7 +381,7 @@ def populate_foes_on_board(foe):  # TODO
     type_of_foe = foe['name']
     foe_hit_points = foe['Current HP']
 
-    print(f'You have encountered a foe, {type_of_foe}! It has {foe_hit_points} HP')
+    print(f'You have encountered a foe, {type_of_foe}! It has {foe_hit_points} HP.')
     return type_of_foe
 
 
@@ -406,19 +407,21 @@ def user_combat_choice():  # TODO
     """
     print('0. Attack \n'
           '1. Flee \n'
-          '2. Quit \n'
           'Please enter the number that correspond to the action you wish to take (0, 1, 2, 3): ')
 
     user_combat_input = input()
 
     user_combat_input = user_combat_input.lower()
 
-    combat_choice_dict = {('0', 'a', 'attack'): 'Attack', ('1', 'f', 'flee'): 'Flee', ('2', 'q', 'quit'): 'Quit'}
+    combat_choice_dict = {('0', 'a', 'attack'): 'Attack', ('1', 'f', 'flee'): 'Flee'}
 
     while True:
         for key, values in combat_choice_dict.items():
             if user_combat_input in key:
                 return values
+
+            if user_combat_input == 'quit':
+                quit_game()
 
         print("That is an invalid answer. Please try again: ")
         user_combat_input = input()
@@ -473,6 +476,23 @@ def confirm_combat_options(combat, character, foe):  # TODO
 #         foe['Current HP'] -= 1
 
 
+def check_boss_location(character, game_boss):
+    """
+    >>> player = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 5}
+    >>> boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 20}
+    >>> check_boss_location(player, boss)
+    True
+    >>> player = {'X-coordinate': 23, 'Y-coordinate': 18, 'Current HP': 5}
+    >>> boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 20}
+    >>> check_boss_location(player, boss)
+    False
+    """
+    boss_coordinates_tuple = (game_boss['X-coordinate'], game_boss['Y-coordinate'])
+    character_coordinates_tuple = (character['X-coordinate'], character['Y-coordinate'])
+
+    return True if boss_coordinates_tuple == character_coordinates_tuple else False
+
+
 def flee(character):  # TODO need to implement into main
     """
     Flees from the foe. There is a 20% chance of the monster dealing 1-3 damage.
@@ -505,10 +525,20 @@ def make_boss():
     {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2, 'Description': "Despite being a non-living \
 object, it smirks at the thought of you fighting it, as it flash all its' crowns at you."}
     """
-    COVID_GAME_BOSS = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2,
+    COVID_GAME_BOSS = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 20, 'Attack': 3,
                        'Description': 'Despite being a non-living object, it smirks at the thought of you fighting it, '
                                       'as it flash all its\' crowns at you.'}
     return COVID_GAME_BOSS
+
+
+def describe_boss(game_boss):
+    """
+
+    """
+    boss_description = game_boss['Description']
+    boss_hit_points = game_boss['Current HP']
+    print(f'You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have build up enough immunity'
+          f'to stand a fighting chance against it. \n{boss_description}. It has {boss_hit_points} HP')
 
 
 def check_if_goal_attained(board, character, game_boss):  # TODO
@@ -574,8 +604,6 @@ def game():
     board = make_board(ROWS, COLUMNS)
     character = choose_character()
     describe_character(character)
-    final_boss = make_boss()
-    foe = foe_generator()
     achieved_goal = False
     while is_alive(character) and not achieved_goal:
         board_printer(ROWS, COLUMNS, character)
@@ -585,13 +613,18 @@ def game():
         valid_move = validate_move(board, character, direction)
         if valid_move:
             move_character(board, character, direction)
+            final_boss = make_boss()
+            boss_present = check_boss_location(character, final_boss)
             there_is_a_challenger = check_for_foes()
-            if there_is_a_challenger:
+            if boss_present:
+                describe_boss(final_boss)
+                user_combat_choice()
+            elif there_is_a_challenger:
+                foe = foe_generator()
                 populate_foes_on_board(foe)
                 combat = user_combat_choice()
                 # run = flee(character)
                 # attack = attack_foe(character, foe)
-                confirm_combat_options(combat)
                 # guessing_game(character)
             achieved_goal = check_if_goal_attained(board, character, final_boss)
         else:

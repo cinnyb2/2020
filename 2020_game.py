@@ -19,7 +19,8 @@ RANDOM_TILE_DESCRIPTION = ['You see nothing, the emptiness fill you with hollown
                            'You have entered a hallway full of monster statues, you are filled with fear.',
                            'You see a small light, which sparks hope in you.',
                            'You have entered an abandoned room, the nauseating stench is giving you a headache.',
-                           'You are surrounded by tall grass.']  # variety of tile descriptions
+                           'You are surrounded by tall grass.'
+                           'There is a fountain straight ahead.']  # variety of tile descriptions
 
 
 def introduction() -> None:
@@ -111,21 +112,21 @@ def choose_character() -> dict:
     """
     name = player_name()
     all_character_options = {'vulnerable senior': {'X-coordinate': 20, 'Y-coordinate': 17, 'Current HP': 3, 'Level': 1,
-                                                   'EXP': 0, 'Name': name, 'Attack': 10,
+                                                   'EXP': 0, 'Name': name, 'Attack': 10, 'Num_attacks': 1,
                                                    'Attack description': 'You showed your hospital bill.',
                                                    'Description': 'You don\'t have a lot of life you but you '
                                                                   'keep hanging on!'},
                              'unemployed new grad': {'X-coordinate': 5, 'Y-coordinate': 2, 'Current HP': 8,
-                                                     'Level': 1, 'EXP': 0, 'Name': name, 'Attack': 5,
+                                                     'Level': 1, 'EXP': 0, 'Name': name, 'Attack': 5, 'Num_attacks': 1,
                                                      'Attack description': 'You Threw your overpriced textbook.',
                                                      'Description': 'You are hopeful but a bit jaded.'},
                              'furloughed worker': {'X-coordinate': 8, 'Y-coordinate': 7, 'Current HP': 15, 'Level': 1,
                                                    'Description': 'You are just done with life.', 'Name': name,
-                                                   'Attack': 2,
+                                                   'Attack': 2, 'EXP': 0, 'Num_attacks': 1,
                                                    'Attack description': 'You showed your receding hairline.'},
                              'angry teenager': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 10, 'Level': 1,
                                                 'Description': 'You don\'t know why but you are angry at everything.',
-                                                'Name': name, 'Attack': 8,
+                                                'Name': name, 'Attack': 8, 'EXP': 0, 'Num_attacks': 1,
                                                 'Attack description': 'You told the foe that you just don\'t want to '
                                                                       'talk about it.'}}
 
@@ -404,7 +405,7 @@ def foe_generator() -> dict:
     :postcondition: generate a random foe from a list of foes
     :return: dictionary with the foe's information
     """
-    foes = {'name': random.choice(FOE_VARIETY), 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50,
+    foes = {'name': random.choice(FOE_VARIETY), 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, 'Num_attacks': 1,
             'Attack description': 'Its trying its best to make you miserable.'}
     return foes  # Choose a random foe from the FOE_VARIETY and give it all the same stats
 
@@ -477,26 +478,30 @@ def user_combat_choice() -> str:
         user_combat_input = input()
 
 
-def battle(character, foe, decision):  # TODO
-    who_goes_first = random.randint(0, 1)  # index 0 attacks first and index 1 attacks after
+def battle(character, foe):
+    """
 
-    if who_goes_first == 1:  # random number is 1 then character goes first
-        print(f'You get the first strike or chance to flee!')
-    else:
-        print(f'Brace yourself, the foe will attack you first.')
+    :param character: dictionary with character's information
+    :param foe: dictionary of the enemy's information
+    :precondition:
+    :postcondition:
+    :return: tuple of the foe's exp and character's HP
+    """
     while is_alive(character) and is_alive(foe):
+        decision = user_combat_choice()
         if decision == 'Flee':
             flee(character)
+            return character
         if decision == 'Attack':
             attack_foe(character, foe)
+            if not is_alive(foe):
+                character['EXP'] += foe['EXP']
+                print(f"\nYou have defeated {foe['Name']}. You have gained {character['EXP']}!")
+                return character
             attack_foe(foe, character)
-    if not is_alive(foe):
-        character['EXP'] += foe['EXP']
-        print(f"\nYou have defeated {foe['Name']}. You have gained {character['EXP']}!")
-        return character
 
 
-def attack_foe(character: dict, foe: dict) -> tuple:  # TODO
+def attack_foe(character: dict, foe: dict) -> None:
     """
 
     :param foe: dictionary of the enemy's information
@@ -511,15 +516,15 @@ def attack_foe(character: dict, foe: dict) -> tuple:  # TODO
     You showed your receding hairline It inflicted 3 damage to the foe.
     >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You glared menacingly', 'EXP': 50}
     >>> enemy = {'name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, \
-    'Attack description': 'You refuse to wash you hands too!' }
+    'Attack description': 'They refuse to wash you hands too!' }
     >>> attack_foe(enemy, player)
-    You refuse to wash you hands too! It inflicted 1 damage to the foe.
+    They refuse to wash you hands too! It inflicted 1 damage to the foe.
     """
     special_attack = character['Attack description']
-    character_damage = character['Attack']
-    foe_hp = foe['Current HP']
-    foe_hp += character_damage
-    print(f'{special_attack} It inflicted {character_damage} damage to the foe.')
+    for attack_damage in it.repeat(character['Attack'], character['Num_attacks']):  # makes an iterable the number of
+        foe['Current HP'] -= attack_damage                                          # number of attack times
+        print(f"\n{character['Name']} {special_attack} inflicted {attack_damage} damage to the {foe['Name']}.")
+        print(f"{foe['Current HP']}")
 
 
 def flee(character: dict) -> dict:
@@ -555,10 +560,10 @@ def make_boss() -> dict:
 object, it smirks at the thought of you fighting it, as it flash all its' crowns at you.", 'Attack description': "It's \
 trying to mutate itself to have your DNA"}
     """
-    game_boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2,
+    game_boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000,
                  'Description': 'Despite being a non-living object, it smirks at the thought of you fighting it, '
-                                'as it flash all its\' crowns at you.', 'Attack description': 'It\'s trying to mutate '
-                                                                                              'itself to have your DNA'}
+                                'as it flash all its\' crowns at you.', 'Name': 'SARS‐CoV‐2', 'Num_attacks': 2,
+                 'Attack description': 'It\'s trying to mutate itself to have your DNA.'}
     return game_boss  # creates a boss object
 
 
@@ -611,6 +616,9 @@ fighting chance against it.
 
 
 def level_checker(character: dict) -> bool:
+    """
+
+    """
     return True if character['EXP'] == 100 or 200 else False
 
 
@@ -661,11 +669,10 @@ def level_describer(character: dict) -> None:
     >>> level_describer(player)
     Congratulations, you have leveled up to 3 you are now invincible!
     """
-    level = character['Level']
-    if level == 2:
-        print(f'Congratulations, you have leveled up to {level} you are now a partially vaccinated!')
-    if level == 3:
-        print(f'Congratulations, you have leveled up to {level} you are now invincible!')
+    if character['Level'] == 2:
+        print(f"Congratulations, you have leveled up to {character['Level']} you are now a partially vaccinated!")
+    if character['Level'] == 3:
+        print(f"Congratulations, you have leveled up to {character['Level']} you are now invincible!")
 
 
 def check_if_goal_attained(board: dict, character: dict, game_boss: dict) -> bool:
@@ -718,7 +725,7 @@ def is_alive(character: dict) -> bool:
     >>> is_alive(player)
     False
     """
-    return False if character['Current HP'] == 0 else True
+    return False if character['Current HP'] <= 0 else True
 
 
 def game() -> None:
@@ -745,16 +752,14 @@ def game() -> None:
             there_is_a_challenger = check_for_foes()
             if boss_present:
                 describe_boss(final_boss)
-                decision = user_combat_choice()  # issue
-                battle(character, final_boss, decision)
+                battle(character, final_boss)
                 if level_checker:
                     level_up(character)
                     level_describer(character)
             elif there_is_a_challenger:
                 foe = foe_generator()
                 populate_foes_on_board(foe)
-                decision = user_combat_choice()  # issue
-                battle(character, foe, decision)
+                battle(character, foe)
                 if level_checker:
                     level_up(character)
                     level_describer(character)

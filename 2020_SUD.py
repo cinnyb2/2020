@@ -600,7 +600,7 @@ def make_boss() -> dict:
 its' crowns at you.", 'Name': 'SARS‐CoV‐2', 'Number of Attacks': 2, 'Attack description': 'is trying to mutate itself\
  to have your DNA.'}
     """
-    game_boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000,
+    game_boss = {'X-coordinate': 20, 'Y-coordinate': 20, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000,
                  'Description': 'Despite being a non-living object, it smirks at the thought of you fighting it, '
                                 'as it flash all its\' crowns at you.', 'Name': 'SARS‐CoV‐2', 'Number of Attacks': 2,
                  'Attack description': 'is trying to mutate itself to have your DNA.'}

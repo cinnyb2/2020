@@ -79,7 +79,7 @@ def introduction() -> None:
           ' a 20% chance of an \nevent occurring which may inflict damage onto you before you attack it, or when you '
           'flee. \nYou may choose to quit at any time by typing \'quit\' after you have selected your fate.')
 
-    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+    print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
     time.sleep(2)
 

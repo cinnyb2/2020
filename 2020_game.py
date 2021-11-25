@@ -1,26 +1,47 @@
-"""
-Your name: Cindy Liu
-Your student number: A01270988
-
-All of your code must go in this file.
-"""
 import random
 import sys
 import time
 import itertools as it
 
 # constants, that do not change
-FOE_VARIETY = ['crippling student debt', 'Murder Hornets', 'Australia bushfire', 'Dow Jones stock market crash',
+
+FOE_VARIETY = ['crippling student debt', 'Murder Hornets', 'Australian bushfire', 'Dow Jones stock market crash',
                'your parents that you started living with since the pandemic', 'your sanity',
                'toilet paper shortage', 'avocado toast you can no longer afford',
                'anti-masker', 'Zoom university', 'online learning']  # variety of foes
 
-RANDOM_TILE_DESCRIPTION = ['You see nothing, the emptiness fill you with hollowness.',
+RANDOM_TILE_DESCRIPTION = ['You see nothing, the emptiness fills you with dread.',
                            'You have entered a hallway full of monster statues, you are filled with fear.',
                            'You see a small light, which sparks hope in you.',
-                           'You have entered an abandoned room, the nauseating stench is giving you a headache.',
-                           'You are surrounded by tall grass.'
-                           'There is a fountain straight ahead.']  # variety of tile descriptions
+                           'You have entered an abandoned room. The nauseating stench gives you a headache.',
+                           'You are surrounded by tall grass.']  # variety of tile descriptions
+
+ROWS = 26
+COLUMNS = 26
+
+DEAD_ASCII = r"""
+
+              _____
+             /     \
+            | () () |
+             \  ^  /
+              |||||
+              |||||
+     You have gone insane.
+           """
+
+VICTORY_ASCII = r"""
+                                               .''.       
+           .''.      .        *''*    :_\/_:     . 
+          :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.
+      .''.: /\ :   ./)\   ':'* /\ * :  '..'.  -=:o:=-
+     :_\/_:'.:::.    ' *''*    * '.\'/.' _\(/_'.':'.'
+     : /\ : :::::     *_\/_*     -= o =-  /)\    '  *
+      '..'  ':::'     * /\ *     .'/.\'.   '
+          *            *..*         :
+           *
+            *
+         Congratulations you have survived 2020!"""
 
 
 def introduction() -> None:
@@ -33,27 +54,34 @@ def introduction() -> None:
     :postcondition: function will print helpful introductory text and instructions.
     :return: none, uses print statements
     """
-    print('\n\nDecember 31st 2019 23:59: You were outside English Bay counting down the seconds until the new year.'
-          '\n2019 was a hard year for you, so you were so excited for the new year.\nIt is 2020 after all, and you are '
-          'here for the 20/20 vision.\nLittle did you know what 2020 has in store for you...\n')
+    print(r"""
+                 pd*"*b.  ,pP""Yq.   pd*"*b.  ,pP""Yq.  
+                (O)   j8 6W'    `Wb (O)   j8 6W'    `Wb 
+                    ,;j9 8M      M8     ,;j9 8M      M8 
+                 ,-='    YA.    ,A9  ,-='    YA.    ,A9 
+                Ammmmmmm  `Ybmmd9'  Ammmmmmm  `Ybmmd9'                       
+    """)
+    print('\nDecember 31st 2019 23:59: You were outside English Bay counting down the seconds until the new year.'
+          '\n2019 was a hard year for you, so you were so excited for the next one.\nIt is 2020 after all, and you are'
+          ' here for the 20/20 vision.\nLittle did you know what 2020 has in store for you...\n')
     time.sleep(2)
 
     print('January 1st 2020 00:00: Something has gone horribly wrong the sky turned black'
           ' and you suddenly got \nteleported to an dark abyss. You have to escape abyss full of misfortunes in one'
           ' piece \nby defeating COVID-19 and everything that it throws at you without going insane.\n')
-    # time.sleep(2)
+    time.sleep(2)
 
-    print('Choose your fate wisely, each fate has different attributes and start at different positions.'
-          '\nThe more events (foes) you surviving through, the more you will generate antibodies (EXP) '
-          '\nby increasing your immunity (Level) and increase your HP which is your sanity meter. '
-          '\nYou need to defeat COVID-19 (final boss) by generating enough antibodies to withstand its attack and '
-          'survive 2020.\nYour location is marked by the P, and the final boss is the virus marked, there is a 20% '
-          'chance of an \nevent occurring which may inflict damage onto you before you attack it, or when you flee.'
-          '\nYou may choose to quit at any time by typing \'quit\' after you have selected your fate.')
+    print('Choose your fate wisely: each fate has different attributes and start at different positions.'
+          '\nThe more events (foes) you survive, the more antibodies (EXP) you will generate '
+          '\nby increasing your immunity (level) and increase your HP which is your sanity meter. '
+          '\nYou need to defeat SARS-CoV-2 (final boss) by generating enough antibodies to withstand its attack and '
+          'survive 2020.\nYour location is marked by the P, and the final boss is marked by the microbe emoji. There is'
+          ' a 20% chance of an \nevent occurring which may inflict damage onto you before you attack it, or when you '
+          'flee. \nYou may choose to quit at any time by typing \'quit\' after you have selected your fate.')
 
     print('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
-    # time.sleep(2)
+    time.sleep(2)
 
 
 def player_name() -> str:
@@ -61,6 +89,7 @@ def player_name() -> str:
     Prompts user to enter their name, helper function for choose_character.
 
     :precondition: name cannot be changed once entered
+    :precondition: the first letter of the name will be uppercase, as with any letter that is after a number
     :postcondition: player name will be stored into the character dictionary
     :return: string
     """
@@ -112,42 +141,40 @@ def choose_character() -> dict:
     """
     name = player_name()
     all_character_options = {'vulnerable senior': {'X-coordinate': 20, 'Y-coordinate': 17, 'Current HP': 3, 'Level': 1,
-                                                   'EXP': 0, 'Name': name, 'Attack': 10, 'Num_attacks': 1,
+                                                   'EXP': 0, 'Name': name, 'Attack': 10, 'Number of Attacks': 1,
                                                    'Attack description': 'You showed your hospital bill.',
                                                    'Description': 'You don\'t have a lot of life you but you '
                                                                   'keep hanging on!'},
                              'unemployed new grad': {'X-coordinate': 5, 'Y-coordinate': 2, 'Current HP': 8,
-                                                     'Level': 1, 'EXP': 0, 'Name': name, 'Attack': 5, 'Num_attacks': 1,
-                                                     'Attack description': 'You Threw your overpriced textbook.',
+                                                     'Level': 1, 'EXP': 0, 'Name': name, 'Attack': 5,
+                                                     'Number of Attacks': 1,
+                                                     'Attack description': 'You threw your overpriced textbook.',
                                                      'Description': 'You are hopeful but a bit jaded.'},
                              'furloughed worker': {'X-coordinate': 8, 'Y-coordinate': 7, 'Current HP': 15, 'Level': 1,
                                                    'Description': 'You are just done with life.', 'Name': name,
-                                                   'Attack': 2, 'EXP': 0, 'Num_attacks': 1,
+                                                   'Attack': 2, 'EXP': 0, 'Number of Attacks': 1,
                                                    'Attack description': 'You showed your receding hairline.'},
                              'angry teenager': {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 10, 'Level': 1,
                                                 'Description': 'You don\'t know why but you are angry at everything.',
-                                                'Name': name, 'Attack': 8, 'EXP': 0, 'Num_attacks': 1,
+                                                'Name': name, 'Attack': 8, 'EXP': 0, 'Number of Attacks': 1,
                                                 'Attack description': 'You told the foe that you just don\'t want to '
                                                                       'talk about it.'}}
 
-    print(f'\nWelcome {name}, please choose your fate (0, 1, 2, 3): \n'
-          '0. Vulnerable senior \n'
-          '1. Furloughed worker \n'
+    print(f'\nWelcome {name}, please choose your fate (1, 2, 3, 4): \n'  # option list
+          '1. Vulnerable senior \n'
           '2. Unemployed new graduate \n'
-          '3. Angry teenager \n')
+          '3. Furloughed worker \n'
+          '4. Angry teenager \n')
 
     # edge case where user enter something other than the valid number (e.g. a number, a space, number outside index)
-    character_class_input = -1  # create instance of character_class_input and gives a comparison order
-    acceptable_input = [i for i in range(4)]  # [0,1,2,3]
-    input_accepted = False  # set a stop point for the while loop
-    while not input_accepted:
-        character_class_input = input()  # prompt input
-        input_accepted = character_class_input.isdigit() and int(character_class_input) in acceptable_input
-        if not input_accepted:
-            print(f"That is an invalid answer. Please choose again (0, 1, 2, 3): ")
+    acceptable_inputs = list(map(str, [i for i in range(1, 5)]))  # makes sure input is within [1, 2, 3, 4]
+    player_input = input()  # prompt input
+    while player_input not in acceptable_inputs:  # if it is not an acceptable input enter into while loop
+        print("That is an invalid answer. Please choose again (1, 2, 3, 4): ")
+        player_input = input()
 
-    for index, character_type in enumerate(all_character_options.keys()):  # enumerate all_character_option's keys
-        if str(index) == character_class_input:  # check to see if character key is within input
+    for index, character_type in enumerate(all_character_options.keys(), 1):  # enumerate all_character_option's keys
+        if str(index) == player_input:  # check to see if character key is within input
             return all_character_options[character_type]
 
 
@@ -177,17 +204,11 @@ def describe_character(character: dict) -> None:
     Special Attack: You Threw your overpriced textbook
     Description: You are hopeful but a bit jaded.
     """
-    character_description = character['Description']
-    attack_damage = character['Attack']
-    health = character['Current HP']
-    attack_description = character['Attack description']
-    level = character['Level']
-
-    print(f'Attack: {attack_damage}'  # prints the character's stats
-          f'\nHP: {health}'
-          f'\nLevel: {level}'
-          f'\nSpecial Attack: {attack_description}'
-          f'\nDescription: {character_description}')
+    print(f"Attack: {character['Attack']}"  # prints the character's stats
+          f"\nHP: {character['Current HP']}"
+          f"\nLevel: {character['Level']}"
+          f"\nSpecial Attack: {character['Attack description']}"
+          f"\nDescription: {character['Description']}")
 
 
 def describe_current_location(board: dict, character: dict) -> None:
@@ -207,19 +228,19 @@ def describe_current_location(board: dict, character: dict) -> None:
     >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (1, 2): 'room 3', (1, 3): 'room 4', (1, 1): 'random 5'}
     >>> describe_current_location(board_map, player)
     <BLANKLINE>
-    room 3 Your current coordinates are (1, 2)
+    room 3 Your current coordinates are (1, 2).
 
     >>> player = {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 5}
     >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (1, 2): 'room 3', (1, 3): 'room 4', (1, 1): 'random 5'}
     >>> describe_current_location(board_map, player)
     <BLANKLINE>
-    room 1 Your current coordinates are (0, 0)
+    room 1 Your current coordinates are (0, 0).
     """
 
     coordinates_tuple = (character['X-coordinate'], character['Y-coordinate'])  # combine the x and y values
     description = board[coordinates_tuple]
 
-    print(f'\n{description} Your current coordinates are {coordinates_tuple}')
+    print(f'\n{description} Your current coordinates are {coordinates_tuple}.')
 
 
 def board_printer(width: int, height: int, character: dict) -> None:
@@ -237,8 +258,8 @@ def board_printer(width: int, height: int, character: dict) -> None:
     >>> player = {'X-coordinate': 1, 'Y-coordinate': 0, 'Current HP': 5}
     >>> board_printer(2, 4, player)
     #######
+    # . P #
     # . . #
-    # P . #
     # . . #
     # . . #
     #######
@@ -250,9 +271,9 @@ def board_printer(width: int, height: int, character: dict) -> None:
     for row in range(height):
         print("#", end=" ")
         for column in range(width):
-            if character_location == (row, column):
+            if character_location == (column, row):
                 print('P', end=" ")  # character location
-            elif (row, column) == (20, 18):
+            elif (column, row) == (20, 20):
                 print('🦠', end="")  # game boss location
             else:
                 print(".", end=" ")  # prints . for all tiles that are not the character nor game boss
@@ -269,11 +290,11 @@ def health_printer(character: dict) -> None:
     :precondition: character HP must be > 0
     :postcondition: each key is printed and for the key that is assigned True as a value, it prints the character
     :return: printed board displaying character's current health
-
     """
     hearts = "♥ " * character['Current HP']
-    empty_hearts = "♡ " * (15 - character['Current HP'])
-    print(f"Health Points [{character['Current HP']} /15] {hearts}{empty_hearts}")  # represents your character HP
+    empty_hearts = "♡ " * (20 - character['Current HP'])
+    print(f"Health Points [{character['Current HP']} /20] {hearts}{empty_hearts}")  # represents your character HP
+    # cannot be doctest since there was an additional space that evokes error
 
 
 def user_direction_choice() -> str:
@@ -285,17 +306,17 @@ def user_direction_choice() -> str:
     :postcondition: user will enter the direction they wish to go
     @return: string stating direction 'North', 'East', 'South', 'West'
     """
-    print('0. North \n'
-          '1. East \n'
-          '2. South \n'
-          '3. West \n'
-          'Please enter the number that corresponds to the direction you want to go (0, 1, 2, 3): ')
+    print('1. North \n'
+          '2. East \n'
+          '3. South \n'
+          '4. West \n'
+          'Please enter the number that corresponds to the direction you want to go (1, 2, 3, 4): ')
     user_direction_input = input()
 
     user_direction_input = user_direction_input.lower()
 
-    direction_choice_dict = {('0', 'n', 'north'): 'North', ('1', 'e', 'east'): 'East',
-                             ('2', 's', 'south'): 'South', ('3', 'w', 'west'): 'West'}
+    direction_choice_dict = {('1', 'n', 'north'): 'North', ('2', 'e', 'east'): 'East',
+                             ('3', 's', 'south'): 'South', ('4', 'w', 'west'): 'West'}
 
     while True:  # keeps looping until user enters a valid response from direction dictionary or enter quit
         for key, values in direction_choice_dict.items():
@@ -333,7 +354,6 @@ def validate_move(board: dict, character: dict, direction: str) -> bool:
     desired direction on the map
     @return: True or False
 
-
     >>> player = {'X-coordinate': 1, 'Y-coordinate': 2, 'Current HP': 5}
     >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (1, 2): 'room 3', (1, 3): 'room 4', (1, 1): 'random 5'}
     >>> path = 'North'
@@ -350,11 +370,11 @@ def validate_move(board: dict, character: dict, direction: str) -> bool:
     y_value = character['Y-coordinate']  # stores your coordinates, so it is easier to work with
 
     if direction == 'North':
-        y_value += 1
+        y_value -= 1
     elif direction == 'East':
         x_value += 1
     elif direction == 'South':
-        y_value -= 1
+        y_value += 1
     elif direction == 'West':
         x_value -= 1
     else:
@@ -365,8 +385,7 @@ def validate_move(board: dict, character: dict, direction: str) -> bool:
 
 def move_character(board: dict, character: dict, direction: str) -> dict:
     """
-
-    Move the character to the character to their new location given direction.
+    Move the character to their new location given direction.
 
     @param board: dictionary of board coordinates with corresponding room description
     @param character: dictionary of character's coordinates and HP
@@ -383,15 +402,20 @@ def move_character(board: dict, character: dict, direction: str) -> dict:
     >>> path = 'East'
     >>> move_character(board_map, player, path)
     {'X-coordinate': 1, 'Y-coordinate': 0, 'Current HP': 5}
+    >>> player = {'X-coordinate': 0, 'Y-coordinate': 0, 'Current HP': 5}
+    >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (0, 1): 'room 3', (1, 3): 'room 4', (1, 1): 'random 5'}
+    >>> path = 'South'
+    >>> move_character(board_map, player, path)
+    {'X-coordinate': 0, 'Y-coordinate': 1, 'Current HP': 5}
     """
 
     if validate_move(board, character, direction):
         if direction == 'North':
-            character['Y-coordinate'] += 1
+            character['Y-coordinate'] -= 1
         elif direction == 'East':
             character['X-coordinate'] += 1
         elif direction == 'South':
-            character['Y-coordinate'] -= 1
+            character['Y-coordinate'] += 1
         elif direction == 'West':
             character['X-coordinate'] -= 1
     return character  # return the modified character dictionary that has a new position
@@ -405,8 +429,8 @@ def foe_generator() -> dict:
     :postcondition: generate a random foe from a list of foes
     :return: dictionary with the foe's information
     """
-    foes = {'name': random.choice(FOE_VARIETY), 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, 'Num_attacks': 1,
-            'Attack description': 'Its trying its best to make you miserable.'}
+    foes = {'Name': random.choice(FOE_VARIETY), 'Current HP': 5, 'Attack': 1, 'EXP': 50,
+            'Number of Attacks': 1, 'Attack description': 'Its trying its best to make you miserable.'}
     return foes  # Choose a random foe from the FOE_VARIETY and give it all the same stats
 
 
@@ -419,17 +443,17 @@ def populate_foes_on_board(foe: dict) -> str:
     :postcondition: a random foe will be populated onto the board
     :return: dictionary of the enemy's information
 
-    >>> enemy = {'name': 'Australia bushfire', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
+    >>> enemy = {'Name': 'Australia bushfire', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
     >>> populate_foes_on_board(enemy)
     You have encountered a foe, Australia bushfire! It has 5 HP.
     'Australia bushfire'
 
-    >>> enemy = {'name': 'Murder Hornets', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
+    >>> enemy = {'Name': 'Murder Hornets', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
     >>> populate_foes_on_board(enemy)
     You have encountered a foe, Murder Hornets! It has 5 HP.
     'Murder Hornets'
     """
-    type_of_foe = foe['name']
+    type_of_foe = foe['Name']
     foe_hit_points = foe['Current HP']
 
     print(f'You have encountered a foe, {type_of_foe}! It has {foe_hit_points} HP.')  # Describe the foe to the player
@@ -456,15 +480,15 @@ def user_combat_choice() -> str:
     :postcondition: the program will register their option and respond accordingly
     @return: string stating options
     """
-    print('0. Attack \n'
-          '1. Flee \n'
-          'Please enter the number that correspond to the action you wish to take (0, 1): ')
+    print('1. Attack \n'
+          '2. Flee \n'
+          'Please enter the number that correspond to the action you wish to take (1, 2): ')
 
     user_combat_input = input()
 
     user_combat_input = user_combat_input.lower()
 
-    combat_choice_dict = {('0', 'a', 'attack'): 'Attack', ('1', 'f', 'flee'): 'Flee'}
+    combat_choice_dict = {('1', 'a', 'attack'): 'Attack', ('2', 'f', 'flee'): 'Flee'}
 
     while True:
         for key, values in combat_choice_dict.items():
@@ -474,76 +498,109 @@ def user_combat_choice() -> str:
             if user_combat_input == 'quit':
                 quit_game()
 
-        print("That is an invalid answer. Please try again: ")
+        print("That is an invalid answer. Please try again (1, 2): ")
         user_combat_input = input()
 
 
-def battle(character, foe):
+def foe_flee() -> bool:
     """
+    Returns True or False if the foe ran away.
 
-    :param character: dictionary with character's information
-    :param foe: dictionary of the enemy's information
-    :precondition:
-    :postcondition:
-    :return: tuple of the foe's exp and character's HP
+    :precondition: chance of foe fleeing is always 20%
+    :precondition: all characters can flee, if the game boss flees it can come back with original HP
+    :postcondition: returns True or False if the foe ran away
+    @return: True or False
     """
-    while is_alive(character) and is_alive(foe):
+    return random.randint(0, 4) < 1  # 20% chance foe fleeing
+
+
+def battle(character: dict, foe: dict) -> str or dict:
+    """
+    Initiates a battle between character and a foe
+
+    The character/player will always go first.
+    :param character: dictionary with character's information
+    :param foe: dictionary of the foe's information
+    :precondition: both the character and foe must have dictionaries that contain the same keys
+    :precondition: both parties must have HP > 0 at the start of the battle
+    :postcondition: battle will continue until either until the character or foe choose to flee or quit, otherwise until
+    one party dies
+    :return: dictionary of character information
+    """
+    while is_alive(character) and is_alive(foe):  # keep looping if both character and foe are alive
         decision = user_combat_choice()
+
         if decision == 'Flee':
-            flee(character)
-            return character
+            flee(character)   # calls the flee function
+            return 'Flee'
+
         if decision == 'Attack':
-            attack_foe(character, foe)
-            if not is_alive(foe):
-                character['EXP'] += foe['EXP']
-                print(f"\nYou have defeated {foe['Name']}. You have gained {character['EXP']}!")
+            attack_foe(character, foe)  # character attacks first
+            if not is_alive(foe):  # if the foe dies
+                character['EXP'] += foe['EXP']    # gives character exp for killing foe
+                print(f"\nYou have defeated {foe['Name']}. You have gained {character['EXP']} EXP!")
                 return character
-            attack_foe(foe, character)
+            attack_foe(foe, character)  # foe's turn to attack character
+
+        if foe_flee() is True:
+            print('You looked too scary for the foe, it ran away!')
+            break
 
 
 def attack_foe(character: dict, foe: dict) -> None:
     """
+    Attack the opposing character.
 
+    Attack damage is based on the character's own attack damage output.
     :param foe: dictionary of the enemy's information
     :param character: dictionary with character's information
-    :precondition:
-    :postcondition:
-    :return: tuple of the foe's exp and character's HP
+    :precondition: both character must be alive at the start
+    :postcondition: successfully inflict damage to the opposing character
+    :return: None, print statements
 
-    >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You showed your receding hairline'}
-    >>> enemy = {'name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50}
+    >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You showed your receding hairline.'\
+    ,'Number of Attacks': 1, 'Name': 'Cindy'}
+    >>> enemy = {'name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, 'Number of Attacks': 1, \
+    'Name': 'Hannah'}
     >>> attack_foe(player, enemy)
-    You showed your receding hairline It inflicted 3 damage to the foe.
-    >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You glared menacingly', 'EXP': 50}
-    >>> enemy = {'name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, \
-    'Attack description': 'They refuse to wash you hands too!' }
+    <BLANKLINE>
+    Cindy You showed your receding hairline. It Inflicts 3 damage to Hannah.
+    Hannah has 2 HP.
+    >>> player = {'Current HP': 10, 'Level': 1, 'Attack': 3, 'Attack description': 'You glared menacingly', 'EXP': 50,\
+'Number of Attacks': 1, 'Name': 'Cindy'}
+    >>> enemy = {'Name': 'anti-masker', 'Current HP': 5, 'Max HP': 5, 'Attack': 1, 'EXP': 50, 'Number of Attacks': 1,\
+    'Attack description': 'refuse to wash its hands too!'}
     >>> attack_foe(enemy, player)
-    They refuse to wash you hands too! It inflicted 1 damage to the foe.
+    <BLANKLINE>
+    anti-masker refuse to wash its hands too! It Inflicts 1 damage to Cindy.
+    Cindy has 9 HP.
     """
-    special_attack = character['Attack description']
-    for attack_damage in it.repeat(character['Attack'], character['Num_attacks']):  # makes an iterable the number of
-        foe['Current HP'] -= attack_damage                                          # number of attack times
-        print(f"\n{character['Name']} {special_attack} inflicted {attack_damage} damage to the {foe['Name']}.")
-        print(f"{foe['Current HP']}")
+    for attack_damage in it.repeat(character['Attack'], character['Number of Attacks']):  # makes an iterable of the
+        foe['Current HP'] -= attack_damage  # number of attack times, so some foes can attack twice in a turn
+        print(f"\n{character['Name']} {character['Attack description']} It Inflicts {attack_damage} damage to "
+              f"{foe['Name']}.")
+        print(f"{foe['Name']} has {foe['Current HP']} HP.")
 
 
 def flee(character: dict) -> dict:
     """
-    Flees from the monster. There is a 20% chance of the monster dealing 1-2 damage.
+    Flee from the foe.
+
+    There is a 20% chance of the foe dealing 1-2 damage.
 
     :param character: dictionary with character's information
-    :precondition:
-    :postcondition:
+    :precondition: the character's HP > 0
+    :postcondition: the character will flee successfully with a change of
     :return: character dictionary
     """
     result = random.randint(0, 4) < 1  # 20% chance of getting attack when character flees
-    if result == 1:
-        damage = random.randint(1, 2)
-        print(f'\n The enemy attack you as you flee, you took {damage}.')
+    if result is True:
+        damage = random.randint(1, 2)  # deal 1-2 damage
+        print(f'\nThe enemy attack you as you flee, you took {damage}.')
         character['Current HP'] -= damage
         return character
     else:
-        print(f"\nYou got away safely!")
+        print("\nYou got away safely!")
         return character
 
 
@@ -551,27 +608,29 @@ def make_boss() -> dict:
     """
     Create the boss of the game.
 
-    :precondition: the boss cannot move, it's position on the map is stationary
+    :precondition: the boss cannot move, its position on the map is stationary
     :postcondition: creates a game boss dictionary that contains their position on the game board and their current HP
     :return: dictionary with the boss's information
 
     >>> make_boss()
-    {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2, 'Description': "Despite being a non-living \
-object, it smirks at the thought of you fighting it, as it flash all its' crowns at you.", 'Attack description': "It's \
-trying to mutate itself to have your DNA"}
+    {'X-coordinate': 20, 'Y-coordinate': 20, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000, \
+'Description': 'Despite being a non-living object, it smirks at the thought of you fighting it, as it flashes \
+its namesake crowns at you.', 'Name': 'SARS‐CoV‐2', 'Number of Attacks': 2, 'Attack description': 'is trying to mutate \
+itself to have your DNA.'}
     """
-    game_boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000,
+    game_boss = {'X-coordinate': 20, 'Y-coordinate': 20, 'Current HP': 15, 'Attack': 2, 'EXP': 100000000,
                  'Description': 'Despite being a non-living object, it smirks at the thought of you fighting it, '
-                                'as it flash all its\' crowns at you.', 'Name': 'SARS‐CoV‐2', 'Num_attacks': 2,
-                 'Attack description': 'It\'s trying to mutate itself to have your DNA.'}
+                                'as it flashes its namesake crowns at you.', 'Name': 'SARS‐CoV‐2',
+                 'Number of Attacks': 2, 'Attack description': 'is trying to mutate itself to have your DNA.'}
     return game_boss  # creates a boss object
 
 
 def check_boss_location(character: dict, game_boss: dict) -> bool:
     """
-
     Check to see if the character has encounter the game boss.
 
+    :precondition: the character and the game boss must both be in the same board coordinates
+    :postcondition: correctly check to see if the character has encountered the game boss.
     If the character's coordinates is the same as the game boss, return True else False
 
     :param character: dictionary with character's information
@@ -595,31 +654,41 @@ def check_boss_location(character: dict, game_boss: dict) -> bool:
 def describe_boss(game_boss: dict) -> None:
     """
 
-    Describe the boss information
+    Describe the game boss information
 
     :param game_boss: dictionary of the game boss information
-    :precondition: dictionary of game boss information
-    :postcondition: describe the boss information
+    :precondition: the player must be in the same board location as the game boss to interact with it
+    :postcondition: describe the game boss's information
     :return: none, print statements
 
     >>> boss = {'Current HP': 15, 'Description': " It smirks at the thought of you fighting it."}
     >>> describe_boss(boss)
-    You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have build up enough immunity to stand a \
+    You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have built up enough immunity to stand a \
 fighting chance against it.
-     It smirks at the thought of you fighting it. It has 15 HP
+     It smirks at the thought of you fighting it. It has 15 HP.
 
     """
-    boss_description = game_boss['Description']
-    boss_hit_points = game_boss['Current HP']
-    print(f'You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have build up enough immunity '
-          f'to stand a fighting chance against it.\n{boss_description} It has {boss_hit_points} HP')
+    print(f"You have encountered the source of this pandemic, SARS‐CoV‐2. I hope you have built up enough immunity "
+          f"to stand a fighting chance against it.\n{game_boss['Description']} It has {game_boss['Current HP']} HP.")
 
 
 def level_checker(character: dict) -> bool:
     """
+    Check to see if character has enough EXP to level up.
 
+    :param character: dictionary with character's information
+    :precondition: the character must have the specified number of EXP that correlates to the level increase
+    :postcondition: the function will return whether it is true that they have enough EXP to level up or not
+    :return: True or False
+
+    >>> player = {'EXP': 200}
+    >>> level_checker(player)
+    True
+    >>> player = {'EXP': 150}
+    >>> level_checker(player)
+    False
     """
-    return True if character['EXP'] == 100 or 200 else False
+    return True if character['EXP'] == 100 or character['EXP'] == 200 else False
 
 
 def level_up(character: dict) -> dict:
@@ -633,27 +702,26 @@ def level_up(character: dict) -> dict:
 
     >>> player = {'Level': 1, 'EXP': 100, 'Current HP': 5, 'Attack': 2}
     >>> level_up(player)
-    {'Level': 2, 'EXP': 100, 'Current HP': 10, 'Attack': 4}
+    {'Level': 2, 'EXP': 100, 'Current HP': 7, 'Attack': 4}
 
     >>> player = {'Level': 2, 'EXP': 200, 'Current HP': 5, 'Attack': 2}
     >>> level_up(player)
-    {'Level': 3, 'EXP': 200, 'Current HP': 10, 'Attack': 9}
+    {'Level': 3, 'EXP': 200, 'Current HP': 8, 'Attack': 9}
     """
-    if character['EXP'] == 100:
+    if character['EXP'] == 100 and character['Level'] == 1:
         character['Level'] += 1
         character['Attack'] += 2
-        character['Current HP'] += 5
-    if character['EXP'] == 200:
+        character['Current HP'] += 2
+    if character['EXP'] == 200 and character['Level'] == 2:
         character['Level'] += 1
         character['Attack'] += 7
-        character['Current HP'] += 5
+        character['Current HP'] += 3
 
     return character
 
 
 def level_describer(character: dict) -> None:
     """
-
     Describe the character's level.
 
     :param character: dictionary of the character
@@ -661,23 +729,25 @@ def level_describer(character: dict) -> None:
     :postcondition: a description of the character level will be printed
     :return: None, print level message
 
-    >>> player = {'X-coordinate': 23, 'Y-coordinate': 18, 'Current HP': 5, 'Level': 2}
+    >>> player = {'X-coordinate': 23, 'Y-coordinate': 18, 'Current HP': 5, 'Level': 2, 'EXP': 100}
     >>> level_describer(player)
-    Congratulations, you have leveled up to 2 you are now a partially vaccinated!
+    Congratulations, you have leveled up to 2. You are now partially vaccinated!
 
-    >>> player = {'X-coordinate': 23, 'Y-coordinate': 18, 'Current HP': 5, 'Level': 3}
+    >>> player = {'X-coordinate': 23, 'Y-coordinate': 18, 'Current HP': 5, 'Level': 3, 'EXP': 200}
     >>> level_describer(player)
-    Congratulations, you have leveled up to 3 you are now invincible!
+    Congratulations, you have leveled up to 3. You are now fully vaccinated!
     """
-    if character['Level'] == 2:
-        print(f"Congratulations, you have leveled up to {character['Level']} you are now a partially vaccinated!")
-    if character['Level'] == 3:
-        print(f"Congratulations, you have leveled up to {character['Level']} you are now invincible!")
+    if character['EXP'] == 100:
+        print(f"Congratulations, you have leveled up to {character['Level']}. You are now partially vaccinated!")
+    if character['EXP'] == 200:
+        print(f"Congratulations, you have leveled up to {character['Level']}. You are now fully vaccinated!")
+    if character['EXP'] > 100000000:
+        print(f"Congratulations, you have unlocked hidden level. You are the hero the world needed!")
 
 
 def check_if_goal_attained(board: dict, character: dict, game_boss: dict) -> bool:
     """
-    Check to see if the character has reached the destination (20, 18) and defeated the monster
+    Check to see if the character has reached the destination (20, 20) and defeated the monster
 
     True if character has reached destination and defeated the final boss else False.
 
@@ -686,10 +756,10 @@ def check_if_goal_attained(board: dict, character: dict, game_boss: dict) -> boo
     @param game_boss: dictionary of game boss information
     :precondition: character must be within the board boundary
     :precondition: board must be unchanged
-    :postcondition: check to see if the character has reached the destination (20, 18)
+    :postcondition: check to see if the character has reached the destination (20, 20)
     :return: True or False
-    >>> player = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 5}
-    >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (20, 18): 'room 3'}
+    >>> player = {'X-coordinate': 20, 'Y-coordinate': 20, 'Current HP': 5}
+    >>> board_map = {(0, 0): 'room 1', (1, 0): 'room 2', (20, 20): 'room 3'}
     >>> boss = {'X-coordinate': 20, 'Y-coordinate': 18, 'Current HP': 0, 'Attack': 2}
     >>> check_if_goal_attained(board_map, player, boss)
     True
@@ -701,7 +771,7 @@ def check_if_goal_attained(board: dict, character: dict, game_boss: dict) -> boo
     False
     """
     coordinates_tuple = (character['X-coordinate'], character['Y-coordinate'])
-    if coordinates_tuple == (20, 18) in board.keys() and not is_alive(game_boss):
+    if coordinates_tuple == (20, 20) in board.keys() and not is_alive(game_boss):
         return True
     else:
         return False
@@ -709,7 +779,6 @@ def check_if_goal_attained(board: dict, character: dict, game_boss: dict) -> boo
 
 def is_alive(character: dict) -> bool:
     """
-
     Return whether or not the character is still alive.
 
     @param character: dictionary with character's information (x, y coordinates, and current HP)
@@ -728,13 +797,38 @@ def is_alive(character: dict) -> bool:
     return False if character['Current HP'] <= 0 else True
 
 
+def victory() -> None:
+    """
+    Return the ASCII art for when the character wins the game
+
+    :precondition: character HP must be > 0 and must have defeated the game boss
+    :postcondition: return the ASCII art for when the character wins
+    :return: None, print statement
+    """
+    print(VICTORY_ASCII)
+
+
+def dead_player() -> None:
+    """
+    Return the ASCII art for when the character dies.
+
+    :precondition: character must be 0 HP
+    :postcondition: return the ASCII art for when the character dies
+    :return: None, print statement
+    """
+    print(DEAD_ASCII)
+
+
 def game() -> None:
     """
-    Drive the entire game.
+    Run the entire game
+
+    Continuously loop the gameplay until the user wins or quits.
+    :precondition: user must provide input
+    :postcondition: the game will be over once this function terminates.
+    :return: None, print statements
     """
     introduction()
-    ROWS = 26
-    COLUMNS = 26
     board = make_board(ROWS, COLUMNS)
     character = choose_character()
     describe_character(character)
@@ -752,45 +846,25 @@ def game() -> None:
             there_is_a_challenger = check_for_foes()
             if boss_present:
                 describe_boss(final_boss)
-                battle(character, final_boss)
-                if level_checker:
+                combat = battle(character, final_boss)
+                if level_checker and is_alive(character) and combat != 'Flee':
                     level_up(character)
                     level_describer(character)
             elif there_is_a_challenger:
                 foe = foe_generator()
                 populate_foes_on_board(foe)
-                battle(character, foe)
-                if level_checker:
+                combat = battle(character, foe)
+                if level_checker and is_alive(character) and combat != 'Flee':
                     level_up(character)
                     level_describer(character)
             achieved_goal = check_if_goal_attained(board, character, final_boss)
         else:
-            print(f"Oh no, you have reached the a dead end!")
+            print(f"Oh no, you have reached dead a dead end!")
 
     if achieved_goal:
-        print(f"""
-                                                   .''.       
-               .''.      .        *''*    :_\/_:     . 
-              :_\/_:   _\(/_  .:.*_\/_*   : /\ :  .'.:.'.
-          .''.: /\ :   ./)\   ':'* /\ * :  '..'.  -=:o:=-
-         :_\/_:'.:::.    ' *''*    * '.|'/.' _\(/_'.':'.'
-         : /\ : :::::     *_\/_*     -= o =-  /)\    '  *
-          '..'  ':::'     * /\ *     .'/.|'.   '
-              *            *..*         :
-               *
-                *
-             Congratulations you have survived 2020!""")
+        victory()
     if not is_alive(character):
-        print(f"""
-
-                  _____
-                 |     |
-                | () () |
-                 \  ^  /
-                  |||||
-                  |||||
-         You have gone insane.
-               """)
+        dead_player()
 
 
 def main():
